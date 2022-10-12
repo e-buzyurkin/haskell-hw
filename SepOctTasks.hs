@@ -1,11 +1,10 @@
 --Task 1
+--changed
 inc :: Int -> Int
-inc x | x >= 0     = x + 1
-      | otherwise  = error "Arg must be positive!"
+inc x = x + 1
 
 dec :: Int -> Int
-dec x | x > 0     = x - 1
-      | otherwise  = error "Arg must be positive!"
+dec x = x - 1
 
 pls :: Int -> Int -> Int
 pls x y | y > 0     = pls (inc x) (dec y)
@@ -26,12 +25,12 @@ mlt x y = mltHelper x x (dec y)
 --Task 2
 
 myMax :: Int -> Int -> Int
-myMax x y | x > y     = x
-          | otherwise = y
+myMax x y | mns (x y) > 0    = x
+          | otherwise        = y
 
 myMin :: Int -> Int -> Int
-myMin x y | x < y     = x
-          | otherwise = y
+myMin x y | mns (x y) < 0     = x
+          | otherwise         = y
 
 --Task 3
 
@@ -54,7 +53,7 @@ myDiv1 x y | (x < 0) || (y < 0) = error "Args have to be positive"
                         | x < 0     = dec n
 
 --Task 5
-
+--changed
 myMod :: Int -> Int -> Int
 myMod x y | (x < 0) || (y < 0) = error "Args have to be positive"
           | otherwise          = x - (mlt (myDiv x y) y)
@@ -111,21 +110,28 @@ nok x y | (x < 0) || (y < 0)    = error "Args have to be positive"
 
 --Task 13
 mg (g) (x) = head [y | y <- [1..], isDefined g x y]
-    where isDefined g x y = (all (\t -> g(t, x) /= 0) [1..(y - 1)]) && (g(y, x) == 0)
+    where isDefined (g) x y = (all (\t -> (g t x) /= 0) [1..(y - 1)]) && ((g y x) == 0)
 
 --Task 14
+--changed
+mr (r) (x) = head [y | y <- [1..], isDefined (r) x y]
+    where isDefined (r) x y = (all (\t -> r t x == False) [1..(y - 1)]) && (r y x == True)
 
-mr (r) (x) = head [y | y <- [1..], isDefined r x y]
-    where isDefined r x y = (all (\t -> r(t, x) == False) [1..(y - 1)]) && (r(y, x) == True)
+mr2 (r) x1 x2 = head [y | y <- [1..], isDefined (r) x1 x2 y]
+    where isDefined (r) x1 x2 y = (all (\t -> r t x1 x2 == False) [1..(y - 1)]) && (r y x1 x2 == True)
 
 --Task 15
+--changed
+mySqrt x = mr (\t -> \x -> (x < (t + 1)^2)) x
 
-mySqrt x = head [y | y <- [1..], isDefined x y]
+mySqrt1 x = head [y | y <- [1..], isDefined x y]
     where isDefined x y = (all (\t ->  (x < (t + 1)^2) == False ) [1..(y - 1)]) && ((x < (y + 1)^2) == True)
 
 --Task 16
+--changed
+myDivide x1 x2 = mr2 (\t -> \x1 -> \x2 ->  (x1 < (t + 1) * x2)) x1 x2
 
-myDivide x1 x2 = head [y | y <- [1..], isDefined x1 x2 y]
+myDivide1 x1 x2 = head [y | y <- [1..], isDefined x1 x2 y]
     where isDefined x1 x2 y = ((all (\t ->  (x1 < (t + 1) * x2) == False ) [1..(y - 1)]) && (x1 < (y + 1) * x2) == True)
 
 
