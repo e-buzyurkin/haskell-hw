@@ -144,21 +144,27 @@ absComplex (Complex r i) = sqrt(r^2 + i^2)
 -- реализуйте  для него следующие методы:
 
 --вообще не понимаю че происходит
-{-data MyList a = EmptyList | MyList a MyList
+--UPD: doshlo
+data MyList a = EmptyList | MyList a (MyList a)
     deriving (Show)
 
 fromList :: [a] -> MyList a
 fromList [] = EmptyList
-fromList n = helper n (MyList (head n) fromList (tail n))
-
+fromList n = MyList (head n) (fromList $ tail n)
 
 toList :: MyList a -> [a]
-toList = undefined
+toList EmptyList = []
+toList (MyList h t) = (h:(toList t))
 
 reverseMyList :: MyList a -> MyList a
-reverseMyList = undefined
+reverseMyList EmptyList = EmptyList
+--reverseMyList n = fromList $ reverse $ toList n -- не думаю, что такое решение подойдет
+reverseMyList n = revHelper n EmptyList
+    where revHelper EmptyList acc = acc
+          revHelper (MyList h t) acc = revHelper t (MyList h acc)
 
 -- should do the same thing as standard map
 mapMyList :: (a -> b) -> MyList a -> MyList b
-mapMyList = undefined
--}
+--mapMyList f list = fromList $ map f (toList list) -- аналогично
+mapMyList f EmptyList = EmptyList
+mapMyList f (MyList h t) = MyList (f h) (mapMyList f t)
