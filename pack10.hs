@@ -1,6 +1,7 @@
 import Data.Char
 import Barans
 import Data.Maybe
+import Control.Monad (guard)
 -- example:
 -- makeArt 0 == ""
 -- makeArt 1
@@ -50,11 +51,14 @@ selected_barans = ["i3", "i5", "i6", "i9", "i12"]
     (либо, если такового нет, возвращает Nothing).
 -}
 grandFather :: Sheep -> Maybe Sheep
-grandFather s | mother s == Nothing   = Nothing
-              | otherwise             = father $ fromJust $ mother s
+grandFather s = do
+    guard (mother s /= Nothing)
+    return $ fromJust $ mother s
 
-greatGrandFather s | grandFather s == Nothing   = Nothing
-                   | otherwise                  = father $ fromJust $ grandFather s
+
+greatGrandFather s = do
+    guard (grandFather s /= Nothing)
+    return $ father $ fromJust $ grandFather s
 
 listOfParents s 
         | mother s == Nothing && father s == Nothing = []
@@ -65,16 +69,16 @@ listOfParents s
 
 listOfGrandParents s = foldl (\list s -> list ++ (listOfParents s)) [] (listOfParents s)
 
-isParentless s = isit (listOfParents s)
-    where isit [] = True
-          isit _  = False
+isParentless s = (length $ listOfParents s) == 0
 
 selected_barans :: [Sheep]
 selected_barans = ["i3", "i5", "i6", "i9", "i12"]
 
-selectedFather s | father s == Nothing                          = Nothing
-                 | elem (fromJust $ father s) selected_barans == False     = Nothing
-                 | otherwise                            = father s
+
+selectedFather s = do
+    guard (father s /= Nothing)
+    guard (elem (fromJust $ father s) selected_barans /= False)
+    return $ father s
 
 closestFathersRelative s | father s == Nothing    = Nothing
                          | elem (fromJust $ father s) selected_barans == True  = father s
