@@ -53,12 +53,12 @@ selected_barans = ["i3", "i5", "i6", "i9", "i12"]
 grandFather :: Sheep -> Maybe Sheep
 grandFather s = do
     guard (mother s /= Nothing)
-    return $ fromJust $ mother s
+    mother s >>= father
 
 
 greatGrandFather s = do
     guard (grandFather s /= Nothing)
-    return $ father $ fromJust $ grandFather s
+    grandFather s >>= father
 
 listOfParents s 
         | mother s == Nothing && father s == Nothing = []
