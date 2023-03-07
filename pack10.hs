@@ -51,14 +51,10 @@ selected_barans = ["i3", "i5", "i6", "i9", "i12"]
     (либо, если такового нет, возвращает Nothing).
 -}
 grandFather :: Sheep -> Maybe Sheep
-grandFather s = do
-    guard (mother s /= Nothing)
-    mother s >>= father
+grandFather s = mother s >>= father
 
 
-greatGrandFather s = do
-    guard (grandFather s /= Nothing)
-    grandFather s >>= father
+greatGrandFather s = grandFather s >>= father
 
 listOfParents s 
         | mother s == Nothing && father s == Nothing = []
