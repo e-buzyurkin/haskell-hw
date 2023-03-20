@@ -1,6 +1,7 @@
 import Prelude hiding (head, tail, maximum)
 import Data.Maybe
 import Control.Monad.State
+import System.Random
 
 type GreekData = [(String, [Int])]
 greekDataA :: GreekData
@@ -77,19 +78,29 @@ queryGreekProPlus :: GreekData -> String -> Maybe Double
 queryGreekProPlus = undefined
 
 
-
 -- state monad
--- type RandState = Int
+type RandState = Int
 
--- rollDice :: Int
--- rollDice = 3
+a = 103421
+b = -93572334
 
--- game :: State RandState String
--- game = do
---     firstPlayerRes <- rollDice
---     secondPlayerRes <- rollDice
---     if firstPlayerRes > secondPlayerRes then "First wins" else "Second wins"
+rollDice :: State RandState Int
+rollDice = do
+    seed <- get
+    let temp = mod (a * a - seed * b + 4634 * a - b * 4253422 + 3534 * a * seed + b) 6
+    put temp
+    return temp
 
--- runGame :: String
--- runGame = evalState game startSeed
---     where startSeed = 2
+
+game :: State RandState String
+game = do
+    firstPlayerRes <- rollDice
+    secondPlayerRes <- rollDice
+    if firstPlayerRes > secondPlayerRes then 
+        return "First wins" 
+    else
+        return "Second wins"
+
+runGame :: String
+runGame = evalState game startSeed
+    where startSeed = 3
