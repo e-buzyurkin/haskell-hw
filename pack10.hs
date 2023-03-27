@@ -56,27 +56,31 @@ grandFather s = mother s >>= father
 
 greatGrandFather s = grandFather s >>= father
 
-listOfParents s 
-        | mother s == Nothing && father s == Nothing = []
-        | mother s == Nothing                    = [fromJust $ father s]
-        | father s == Nothing                = [fromJust $ mother s]
-        | otherwise                      = [fromJust $ mother s] ++ [fromJust $ father s]
+listOfParents s = (maybeToList $ mother s) ++ (maybeToList $ father s)
 
 
-listOfGrandParents s = foldl (\list s -> list ++ (listOfParents s)) [] (listOfParents s)
+listOfGrandParents s = (map listOfParents) . listOfParents
 
-isParentless s = (length $ listOfParents s) == 0
+isParentless = null . listOfParents
 
 selected_barans :: [Sheep]
 selected_barans = ["i3", "i5", "i6", "i9", "i12"]
 
 
+
 selectedFather s = do
-    guard (father s /= Nothing)
-    guard (elem (fromJust $ father s) selected_barans /= False)
-    return $ father s
+    case father s of
+        Nothing -> Nothing
+        Just f -> if elem f selected_barans then Just f else Nothing
 
-closestFathersRelative s | father s == Nothing    = Nothing
-                         | elem (fromJust $ father s) selected_barans == True  = father s
-                         | otherwise        = closestFathersRelative $ fromJust $ father s
 
+closestFathersRelative s = if selectedFather s /= Nothing then selectedFather s else do
+    case father s of 
+        Nothing -> Nothing
+        Just f -> closestFathersRelative f 
+    
+    case mother s of
+        Nothing -> Nothing
+        Just m -> closestFathersRelative m
+    
+    Nothing
